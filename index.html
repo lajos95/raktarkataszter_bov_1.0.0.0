@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Levéltári Raktárkataszter</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Dexie.js és Chart.js beágyazása (akár lokális fájlból is, ha nincs net) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <script src="lib/dexie.min.js"></script>
+    <script src="lib/chart.min.js"></script>
+  </head>
+  <body>
+    <div id="takaras" class="display_none"></div>
+    <div id="data_highlight" class="display_none text-center opacity_0 rounded-5">
+
+      </div>
+    <div class="container-fluid">
+      
+      <div class="row mb-4">
+        <!-- 1. FEJLÉC: Globális Kereső -->
+        <header class="main-header">
+          <div class="logo">ArchivKataszter v1.0</div>
+          <div class="search-box">
+            <input
+              type="text"
+              id="global-search"
+              placeholder="Gyorskeresés (Fond, állag, doboz...)"
+            />
+            <button id="search-btn">Keresés</button>
+          </div>
+        </header>
+      </div>
+      <div class="row">
+        <div class="col-2 border-end">
+                     
+              <nav class="nav-menu">
+                <button class="nav-link active" id="btn-dashboard">
+                  Vezérlőpult (Dashboard)
+                </button>
+                <hr />
+                <h3>Raktárak</h3>
+                <ul id="storage-tree">
+                
+                </ul>
+              </nav>
+            
+          
+        </div>
+          
+        <div class="col-10">
+              <div class="row">
+        
+        <div class="col-md-3 border-end">
+            <h5 class="mb-3 text-secondary"><i class="bi bi-diagram-3-fill me-2"></i>Raktár hierarchia</h5>
+            <div class="warehouse-tree-container bg-light p-3 rounded" style="min-height: 500px; max-height: 700px; overflow-y: auto;">
+                
+                <ul class="list-unstyled warehouse-tree">
+                    
+                </ul>
+
+            </div>
+        </div>
+
+        <div class="col-md-9 px-4">
+
+<div class="card bg-light mb-4 shadow-sm">
+    
+</div>
+  <div class="shelf-content">
+
+  </div>
+            
+        </div>
+
+    </div>
+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>
