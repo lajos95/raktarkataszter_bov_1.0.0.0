@@ -16,6 +16,49 @@ export function setViewMode(mode) {
   }
 }
 
+export async function renderRunningMeters() {
+  try {
+    let osszesPolc = await db.polcok.toArray();
+    let teljesKapacitasFm = osszesPolc.reduce((sum, polc) => sum + (Number(polc.hosszFolyometer) || 0), 0);
+
+    let osszesDoboz = await db.dobozok.toArray();
+    let osszesFoglaltFm = osszesDoboz.reduce((sum, doboz) => sum + (Number(doboz.hosszFolyometer) || 0.12), 0);
+
+    let globalPercent = 0;
+    if (teljesKapacitasFm > 0) {
+      globalPercent = Math.round((osszesFoglaltFm / teljesKapacitasFm) * 100);
+    }
+
+    const subtitleEl = document.getElementById("global-stats-subtitle");
+    const progressBarEl = document.getElementById("global-progress-bar");
+    const percentBadgeEl = document.getElementById("global-percent-badge");
+
+    if (subtitleEl) {
+      subtitleEl.textContent = `Teljes állomány: ${osszesFoglaltFm.toFixed(2)} fm / ${teljesKapacitasFm.toFixed(2)} fm (Összesen ${osszesDoboz.length} doboz)`;
+    }
+
+    if (progressBarEl && percentBadgeEl) {
+      progressBarEl.style.width = `${globalPercent}%`;
+      progressBarEl.setAttribute("aria-valuenow", globalPercent);
+      progressBarEl.textContent = `${globalPercent}%`;
+
+      percentBadgeEl.textContent = `${globalPercent}%`;
+
+      let statusClass = "bg-success";
+      if (globalPercent >= 85) {
+        statusClass = "bg-danger";
+      } else if (globalPercent >= 60) {
+        statusClass = "bg-warning text-dark";
+      }
+
+      progressBarEl.className = `progress-bar ${statusClass}`;
+      percentBadgeEl.className = `badge fs-6 ${statusClass}`;
+    }
+  } catch (error) {
+    console.error("Hiba az összesített statisztika kiszámításakor:", error);
+  }
+}
+
 export function renderStorageTree(raktarak) {
   const storageTree = document.getElementById("storage-tree");
 

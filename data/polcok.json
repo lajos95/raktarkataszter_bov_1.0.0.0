@@ -5,7 +5,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 1,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, Alsó polc - normál szabvány"
   },
   {
@@ -14,7 +14,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 2,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, Középső polc - normál szabvány"
   },
   {
@@ -23,7 +23,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 3,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, Felső polc - rövidebb a tetőszerkezet miatt"
   },
   {
@@ -32,7 +32,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 4,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, Felső polc - rövidebb a tetőszerkezet miatt"
   },
   {
@@ -41,7 +41,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 5,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, Felső polc - rövidebb a tetőszerkezet miatt"
   },
   {
@@ -50,7 +50,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 1,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, B állvány alsó polc - szélesített"
   },
   {
@@ -59,7 +59,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 2,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, B állvány alsó polc - szélesített"
   },
   {
@@ -68,7 +68,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 3,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, B állvány alsó polc - szélesített"
   },
   {
@@ -77,7 +77,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 4,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "I. raktár, B állvány alsó polc - szélesített"
   },
   {
@@ -86,7 +86,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 1,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -95,7 +95,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 2,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -113,7 +113,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 1,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -122,7 +122,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 2,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -131,7 +131,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 3,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
   },
 
@@ -141,7 +141,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 1,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -150,7 +150,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 2,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -159,7 +159,7 @@
     "sor": "01. Sor",
     "allvany": "A Állvány",
     "polcSzint": 3,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -168,7 +168,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 1,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -177,7 +177,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 2,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -186,7 +186,7 @@
     "sor": "01. Sor",
     "allvany": "B Állvány",
     "polcSzint": 3,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -195,7 +195,7 @@
     "sor": "01. Sor",
     "allvany": "C Állvány",
     "polcSzint": 1,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -204,7 +204,7 @@
     "sor": "01. Sor",
     "allvany": "C Állvány",
     "polcSzint": 2,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   },
   {
@@ -213,7 +213,7 @@
     "sor": "01. Sor",
     "allvany": "C Állvány",
     "polcSzint": 3,
-    "hosszFolyometer": 1.2,
+    "hosszFolyometer": 1.44,
     "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
   }
 ]

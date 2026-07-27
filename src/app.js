@@ -1,6 +1,6 @@
 import db from "./db.js";
 import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouseRunningMeters, renderBoxDetails, setViewMode,
-  currentViewMode } from "./ui.js";
+  currentViewMode, renderRunningMeters } from "./ui.js";
 
 async function AdatBetoltes() {
   await db.dobozok.clear();
@@ -67,6 +67,7 @@ async function AdatBetoltes() {
   renderStorageTree(raktarak);
   await updateWarehouseRunningMeters(raktarak[0].id, raktarak[0].nev);
   await renderDetailedTree(raktarak[0].id, raktarak[0].nev);
+  await renderRunningMeters();
 }
 
 async function initApp() {
