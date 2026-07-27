@@ -1,5 +1,21 @@
 import db from "./db.js";
 
+export let currentViewMode = "visual";
+let lastShelfData = null;
+
+export function setViewMode(mode) {
+  currentViewMode = mode;
+  if (lastShelfData) {
+    renderShelfContent(
+      lastShelfData.raktarNev,
+      lastShelfData.sorNev,
+      lastShelfData.allvanyNev,
+      lastShelfData.polcok,
+      lastShelfData.dobozok,
+    );
+  }
+}
+
 export function renderStorageTree(raktarak) {
   const storageTree = document.getElementById("storage-tree");
 
@@ -123,64 +139,79 @@ export async function renderDetailedTree(raktarId, raktarNev) {
       if (shelfLink) {
         e.stopPropagation();
 
-        detailedTreeContainer.querySelectorAll(".rack-link, .tree-link").forEach((el) => {
-          el.classList.remove("bg-primary-subtle", "fw-bold", "text-primary");
-        });
+        detailedTreeContainer
+          .querySelectorAll(".rack-link, .tree-link")
+          .forEach((el) => {
+            el.classList.remove("bg-primary-subtle", "fw-bold", "text-primary");
+          });
 
         shelfLink.classList.add("bg-primary-subtle", "fw-bold", "text-primary");
 
         const polcId = shelfLink.dataset.polcid;
         console.log("-> Polcszint sikeresen kiválasztva! Polc ID:", polcId);
-        
+
         return;
       }
 
       const rackLink = e.target.closest(".rack-link");
       if (rackLink) {
-        rackLink.classList.add("bg-primary.subtle", "fw-bold");
+        rackLink.classList.add("bg-primary-subtle", "fw-bold");
 
         const rId = rackLink.dataset.raktarid;
         const sKulcs = rackLink.dataset.sor;
         const aKulcs = rackLink.dataset.allvany;
 
-        const polcok = await db.polcok.where({ raktarId: Number(rId) || rId, sor: sKulcs, allvany: aKulcs }).toArray();
-        
-        const polcIdTomb = polcok.map(p => p.id);
+        const polcok = await db.polcok
+          .where({ raktarId: Number(rId) || rId, sor: sKulcs, allvany: aKulcs })
+          .toArray();
 
-        const dobozok = await db.dobozok.where("polcId").anyOf(polcIdTomb).toArray();
+        const polcIdTomb = polcok.map((p) => p.id);
+
+        const dobozok = await db.dobozok
+          .where("polcId")
+          .anyOf(polcIdTomb)
+          .toArray();
 
         renderShelfContent(raktarNev, sKulcs, aKulcs, polcok, dobozok);
 
-        const isCollapseTrigger = e.target.closest('[data-bs-toggle="collapse"]');
+        const isCollapseTrigger = e.target.closest(
+          '[data-bs-toggle="collapse"]',
+        );
 
-        detailedTreeContainer.querySelectorAll(".rack-link, .tree-link").forEach((el) => {
-          el.classList.remove("bg-primary-subtle", "fw-bold", "text-primary");
-        });
+        detailedTreeContainer
+          .querySelectorAll(".rack-link, .tree-link")
+          .forEach((el) => {
+            el.classList.remove("bg-primary-subtle", "fw-bold", "text-primary");
+          });
 
         rackLink.classList.add("bg-primary-subtle", "fw-bold");
 
         const adatok = {
           raktarId: rackLink.dataset.raktarid,
           sor: rackLink.dataset.sor,
-          allvany: rackLink.dataset.allvany
+          allvany: rackLink.dataset.allvany,
         };
 
         console.log("-> Állvány sikeresen kiválasztva!", adatok);
 
         if (!isCollapseTrigger) {
-          const triggerEl = rackLink.querySelector('[data-bs-toggle="collapse"]');
+          const triggerEl = rackLink.querySelector(
+            '[data-bs-toggle="collapse"]',
+          );
           if (triggerEl) {
-            const targetId = triggerEl.getAttribute('data-bs-target');
+            const targetId = triggerEl.getAttribute("data-bs-target");
             const collapseEl = document.querySelector(targetId);
-            if (collapseEl && typeof bootstrap !== 'undefined') {
-              const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+            if (collapseEl && typeof bootstrap !== "undefined") {
+              const bsCollapse = bootstrap.Collapse.getOrCreateInstance(
+                collapseEl,
+                { toggle: false },
+              );
               bsCollapse.toggle();
             }
           }
         }
       }
     };
- 
   } catch (error) {
     console.error("Hiba történt a részletes fa kirajzolásakor:", error);
   }
@@ -273,63 +304,165 @@ export async function updateWarehouseRunningMeters(raktarId, raktarNev) {
   }
 }
 
-export function renderShelfContent(raktarNev, sorNev, allvanyNev, polcok, dobozok) {
+export function renderShelfContent(
+  raktarNev,
+  sorNev,
+  allvanyNev,
+  polcok,
+  dobozok,
+) {
+  lastShelfData = { raktarNev, sorNev, allvanyNev, polcok, dobozok };
+
   const contentContainer = document.querySelector(".shelf-content");
   if (!contentContainer) return;
 
-  let html = `
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item">${raktarNev}</li>
-                <li class="breadcrumb-item">${sorNev}.</li>
-                <li class="breadcrumb-item active" aria-current="page">${allvanyNev}</li>
-            </ol>
-        </nav>
-    </div>
-    
-    <div class="visual-rack bg-dark p-4 rounded shadow-sm">
-  `;
+  const shelfTitle = document.getElementById("shelf-title");
+  const shelfSubtitle = document.getElementById("shelf-subtitle");
+  if (shelfTitle)
+    shelfTitle.innerHTML = `<i class="bi bi-grid-3x3-gap-fill me-2"></i>${sorNev} / ${allvanyNev} állvány`;
+  if (shelfSubtitle)
+    shelfSubtitle.textContent = `${raktarNev} • Összesen ${polcok.length} polc`;
 
+  if (currentViewMode === "visual") {
+    contentContainer.innerHTML = renderVisualShelfHTML(polcok, dobozok);
+  } else {
+    contentContainer.innerHTML = renderTableShelfHTML(polcok, dobozok);
+  }
+}
+
+function renderVisualShelfHTML(polcok, dobozok) {
   const rendezettPolcok = [...polcok].sort((a, b) => b.polcSzint - a.polcSzint);
+  let html = `<div class="visual-rack d-flex flex-column gap-4">`;
 
   rendezettPolcok.forEach((polc) => {
     const polcDobozok = dobozok.filter((d) => d.polcId === polc.id);
+    const maxKapacitas = 12;
+    const foglaltFm = (polcDobozok.length * 0.12).toFixed(2);
 
     html += `
-    <div class="shelf-layer mb-4">
-          <div class="shelf-title text-light small mb-1">${polc.polcSzint}. Polc</div>
-          <div class="shelf-grid bg-secondary p-2 rounded d-flex gap-2 flex-wrap" style="min-height: 100px;">
+      <div class="shelf-layer bg-light p-3 rounded-3 border shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+          <h6 class="m-0 fw-bold text-secondary">
+            <i class="bi bi-layers-fill me-1 text-primary"></i> ${polc.polcSzint}. polc
+          </h6>
+          <span class="badge ${polcDobozok.length === maxKapacitas ? "bg-danger" : "bg-success"}">
+            ${polcDobozok.length} / ${maxKapacitas} doboz (${foglaltFm} / 1.44 fm)
+          </span>
+        </div>
+
+        <div class="shelf-grid-12 d-grid gap-2" style="grid-template-columns: repeat(4, 1fr);">
     `;
 
-    polcDobozok.forEach((doboz) => {
-      const isOut = doboz.statusz === "Kiemelve" || doboz.statusz === "Kölcsönzött" || doboz.statusz === "Kutatóteremben";
-      const bgClass = isOut ? "bg-info text-white" : "bg-warning text-dark";
-      const iconClass = isOut ? "bi-person-bounding-box" : "bi-box-seam-fill";
-      const labelSuffix = isOut ? " (KI)" : "";
+    for (let row = 0; row < 3; row++) {
+      for (let col = 0; col < 4; col++) {
 
-      html += `
-      <div class="archive-box ${bgClass} p-2 rounded text-center d-flex flex-column justify-content-between shadow" data-dobozszam="${doboz.dobozszam}">
-            <i class="bi ${iconClass} fs-3"></i>
-            <span class="fw-bold" style="font-size: 0.75rem;">${doboz.fondszam}.</span>
-            <span class="fw-bold" style="font-size: 0.75rem;">${doboz.dobozszam}. doboz ${labelSuffix}</span>
-        </div>
-      `;
-      });
+        const slotIndex = (col * 3) + (3 - row - 1);
+        const doboz = polcDobozok[slotIndex];
 
-      html += `
+        if (doboz) {
+          const isOut =
+            doboz.statusz === "Kiemelve" ||
+            doboz.statusz === "Kölcsönzött" ||
+            doboz.statusz === "Kutatóteremben";
+          const bgClass = isOut
+            ? "bg-info text-white border-info"
+            : "bg-warning-subtle text-dark border-warning";
+          const iconClass = isOut
+            ? "bi-person-bounding-box text-info"
+            : "bi-box-seam-fill text-warning";
+
+          html += `
+          <div class="archive-box ${bgClass} p-2 rounded border d-flex flex-column justify-content-between shadow-sm pointer" 
+               data-dobozszam="${doboz.dobozszam}">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge bg-dark extra-small">${doboz.dobozszam}. doboz</span>
+              <i class="bi ${iconClass} fs-6"></i>
+            </div>
+            <div class="fw-bold text-truncate small" title="${doboz.fondszam}. fond">${doboz.fondszam}. fond</div>
+            <div class="text-muted extra-small" style="font-size: 0.7rem;">${doboz.evkor || ""}</div>
           </div>
-          <div class="shelf-wood text-dark-emphasis fw-bold text-center py-1 rounded-bottom shadow-sm" style="font-size: 0.8rem; background-color: #d7ccc8 !important; border-bottom: 5px solid #8d6e63;">
+        `;
+        } else {
+          html += `
+          <div class="empty-slot p-2 rounded d-flex flex-column align-items-center justify-content-center text-muted">
+            <i class="bi bi-plus-circle text-black-50 mb-1"></i>
+            <span style="font-size: 0.65rem;">Szabad hely (${slotIndex + 1} / 12)</span>
+          </div>
+        `;
+        }
+      }
+    }
+
+      html += `
+        </div>
       </div>
     `;
+    
+  });
 
-      html += `</div>`;
-      contentContainer.innerHTML = html;
-    });
-
+  html += `</div>`;
+  return html;
 }
 
-export function renderBoxDetails (doboz, polc) {
+function renderTableShelfHTML(polcok, dobozok) {
+  if (!dobozok || dobozok.length === 0) {
+    return `<div class="alert alert-info">Ezen az állványon jelenleg nincsenek dobozok.</div>`;
+  }
+
+  let html = `
+    <div class="table-responsive bg-white rounded shadow-sm border p-3 text-center">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Polcszint</th>
+            <th>Dobozszám</th>
+            <th>Fondszám</th>
+            <th>Állagszám</th>
+            <th>Évkör</th>
+            <th>Státusz</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  const rendezettDobozok = [...dobozok].sort(
+    (a, b) => a.polcId - b.polcId || a.dobozszam - b.dobozszam,
+  );
+
+  rendezettDobozok.forEach((doboz) => {
+    const polc = polcok.find((p) => p.id === doboz.polcId);
+    const polcSzint = polc ? `${polc.polcSzint}. polc` : "-";
+    const isOut =
+      doboz.statusz === "Kiemelve" ||
+      doboz.statusz === "Kölcsönzött" ||
+      doboz.statusz === "Kutatóteremben";
+
+    html += `
+      <tr class="archive-box pointer" data-dobozszam="${doboz.dobozszam}" style="cursor: pointer;">
+        <td><span class="badge bg-secondary-subtle text-dark">${polcSzint}</span></td>
+        <td><strong class="text-primary">${doboz.dobozszam}. doboz</strong></td>
+        <td>${doboz.fondszam}. fond</td>
+        <td>${doboz.allagszam || "-"}. állag</td>
+        <td>${doboz.evkor || "-"}</td>
+        <td>
+          <span class="badge ${isOut ? "bg-info" : "bg-success"}">
+            ${doboz.statusz || "Raktárban"}
+          </span>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  return html;
+}
+
+export function renderBoxDetails(doboz, polc) {
   const kiemeltDobozadat = document.getElementById("data_highlight");
   const takarasDiv = document.getElementById("takaras");
 
@@ -341,7 +474,7 @@ export function renderBoxDetails (doboz, polc) {
     <h3>Raktári helye:<br> ${doboz.raktarNev} <br>
     ${doboz.allvanyId} állvány <br> ${polc.polcSzint}. polc</h3>
     <h4>Jelenlegi státusza: ${doboz.statusz}</h4>
-  `
+  `;
   kiemeltDobozadat.classList.remove("display_none", "opacity_0");
   takarasDiv.classList.remove("display_none", "opacity_0");
   kiemeltDobozadat.classList.add("display_block", "opacity_1");
@@ -350,14 +483,14 @@ export function renderBoxDetails (doboz, polc) {
   const closeIcon = kiemeltDobozadat.querySelector(".infoicon");
   closeIcon.addEventListener("click", () => {
     kiemeltDobozadat.classList.remove("opacity_1");
-  takarasDiv.classList.remove("opacity_1");
+    takarasDiv.classList.remove("opacity_1");
     kiemeltDobozadat.classList.add("opacity_0");
     takarasDiv.classList.add("opacity_0");
-    setTimeout(() => { 
+    setTimeout(() => {
       kiemeltDobozadat.classList.remove("display_block");
       takarasDiv.classList.remove("display_block");
-      kiemeltDobozadat.classList.add("display_none"); 
+      kiemeltDobozadat.classList.add("display_none");
       takarasDiv.classList.add("display_none");
-  }, 300);
-  })
+    }, 300);
+  });
 }

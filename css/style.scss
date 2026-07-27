@@ -18,6 +18,26 @@
     cursor: pointer;
 }
 
+.box-card {
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &:hover {
+    transform: translate(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+}
+
+.btn-outlined-dashed {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s, border-color 0.2s;
+
+  &:hover {
+    background-color: #e9ecef;
+    border-color: #0d6efd !important;
+    color: #0d6efd !important;
+  }
+}
+
 .tree-item {
   cursor: pointer;
 }
@@ -38,8 +58,8 @@
 }
 
 .archive-box {
-  width: 85px;
-  height: 100px;
+  min-width: 120px;
+  max-height: 100px;
   overflow: auto;
   cursor: pointer;
   transition:
@@ -50,6 +70,18 @@
 .archive-box:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.badge {
+  font-size: 0.65rem;
+}
+
+.empty-slot {
+  min-width: 120px;
+  min-height: 100px; 
+  background-color: #f8f9fa;
+  border: 1px dashed #000;
+  cursor: pointer;
 }
 
 .animate-room {
@@ -67,23 +99,20 @@
     box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
 }
 
-.container-fluid {
-  position: relative;
-}
-
 #data_highlight {
-    position: absolute;
-    max-width: 600px;
-    max-height: 400px;
-    z-index: 5;
+    position: fixed;
+    min-width: 600px;
+    min-height: 400px;
+    z-index: 10;
     margin: auto;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(239, 26, 45);
-    box-shadow: 10px 15px rgba(0, 0, 0, 0.5);
-    background-color: rgba(221, 211, 211);
+    top: 50%;
+    left: 50%;
+    padding: 15px;
+    transform: translate(-50%, -50%);
+    box-shadow: 10px 15px rgba(0, 0, 0, 0.1);
+    background-color: rgb(236, 234, 234);
+
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 #takaras {

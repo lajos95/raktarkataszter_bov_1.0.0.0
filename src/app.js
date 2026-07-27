@@ -1,5 +1,6 @@
 import db from "./db.js";
-import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouseRunningMeters, renderBoxDetails } from "./ui.js";
+import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouseRunningMeters, renderBoxDetails, setViewMode,
+  currentViewMode } from "./ui.js";
 
 async function AdatBetoltes() {
   await db.dobozok.clear();
@@ -70,6 +71,7 @@ async function AdatBetoltes() {
 
 async function initApp() {
   initBoxClickListener();
+  initViewToggleListeners();
   try {
     await AdatBetoltes();
 
@@ -80,7 +82,7 @@ async function initApp() {
 }
 
 function initBoxClickListener() {
-  const shelfContent = document.querySelector(".shelf-content")
+  const shelfContent = document.querySelector(".shelf-content");
   shelfContent.addEventListener("click", async (e) => {
     const dobozElem = e.target.closest(".archive-box");
     if (!dobozElem) return;
@@ -89,18 +91,34 @@ function initBoxClickListener() {
 
     try {
       const doboz = await db.dobozok.where("dobozszam").equals(keresettDoboz).first();
-
-      if (!doboz) {
-        console.warn("Nem található ilyen doboz!");
-        return;
-      }
+      if (!doboz) return;
 
       const polc = await db.polcok.where("id").equals(doboz.polcId).first();
-
       renderBoxDetails(doboz, polc);
     } catch (error) {
       console.error("Hiba történt a doboz részletes adatainak lekérésekor:", error);
     }
   });
+}
+
+function initViewToggleListeners() {
+  const btnVisual = document.getElementById("btn-view-visual");
+  const btnTable = document.getElementById("btn-view-table");
+
+  if (btnVisual && btnTable) {
+    btnVisual.addEventListener("click", () => {
+      if (currentViewMode === "visual") return;
+      btnVisual.classList.add("active");
+      btnTable.classList.remove("active");
+      setViewMode("visual");
+    });
+
+    btnTable.addEventListener("click", () => {
+      if (currentViewMode === "table") return;
+      btnTable.classList.add("active");
+      btnVisual.classList.remove("active");
+      setViewMode("table");
+    });
+  }
 }
 document.addEventListener("DOMContentLoaded", initApp);
