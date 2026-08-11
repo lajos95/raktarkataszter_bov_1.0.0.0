@@ -68,7 +68,7 @@ export function renderStorageTree(raktarak) {
 
   raktarak.forEach((raktar) => {
     const li = document.createElement("li");
-    li.className = "tree-item mb-2 p-2 rounded";
+    li.className = "tree-item mb-2 p-2 rounded list_style_type_none";
     li.style.cursor = "pointer";
     li.dataset.raktarid = raktar.id;
     li.innerHTML = `<i class="bi bi-door-closed-fill text-warning me-2"></i><span class="fw-bold">${raktar.nev}</span>`;

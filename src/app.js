@@ -1,6 +1,7 @@
 import db from "./db.js";
 import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouseRunningMeters, renderBoxDetails, setViewMode,
   currentViewMode, renderRunningMeters } from "./ui.js";
+import { renderFondDistributionChart, renderFondMeterDistributionChart } from "./charts.js";
 
 async function AdatBetoltes() {
   await db.dobozok.clear();
@@ -65,6 +66,8 @@ async function AdatBetoltes() {
     }
   });
   renderStorageTree(raktarak);
+  renderFondDistributionChart('fondDobozChart');
+  renderFondMeterDistributionChart('fondMeterChart');
   await updateWarehouseRunningMeters(raktarak[0].id, raktarak[0].nev);
   await renderDetailedTree(raktarak[0].id, raktarak[0].nev);
   await renderRunningMeters();

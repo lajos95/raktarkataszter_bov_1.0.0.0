@@ -18,6 +18,10 @@
   cursor: pointer;
 }
 
+.list_style_type_none {
+  list-style-type: none;
+}
+
 .box-card {
   transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
