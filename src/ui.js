@@ -373,6 +373,48 @@ export function renderShelfContent(
   }
 }
 
+export function renderFondjegyzekHTML(fondjegyzek) {
+  const container = document.getElementById("fondjegyzek_content");
+  if(!container) return;
+
+  if(!fondjegyzek || fondjegyzek.length === 0) {
+    container.innerHTML = `<div class="alert alert-info">Nincsenek megjeleníthető fondok.</div>`;
+    return;
+  }
+
+  let html = `
+    <div class="table-responsive bg-white rounded shadow-sm border p-3">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Fondszám</th>
+            <th>Fondnév</th>
+            <th>Évkör</th>
+            <th>Folyóméter</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  fondjegyzek.forEach((fond) => {
+    html += `
+      <tr>
+        <td><span class="badge bg-primary fs-6">${fond.fondszam}. fond</span></td>
+        <td class="fw-bold">${fond.megnevezes || "Nincs megadva"}</td>
+        <td>${fond.evkor}</td>
+        <td>${fond.folyometer} fm</td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
 function renderVisualShelfHTML(polcok, dobozok) {
   const rendezettPolcok = [...polcok].sort((a, b) => b.polcSzint - a.polcSzint);
   let html = `<div class="visual-rack d-flex flex-column gap-4">`;
@@ -403,16 +445,28 @@ function renderVisualShelfHTML(polcok, dobozok) {
         const doboz = polcDobozok[slotIndex];
 
         if (doboz) {
-          const isOut =
-            doboz.statusz === "Kiemelve" ||
-            doboz.statusz === "Kölcsönzött" ||
-            doboz.statusz === "Kutatóteremben";
-          const bgClass = isOut
-            ? "bg-info text-white border-info"
-            : "bg-warning-subtle text-dark border-warning";
-          const iconClass = isOut
-            ? "bi-person-bounding-box text-info"
-            : "bi-box-seam-fill text-warning";
+          let bgClass = "";
+          let iconClass = "";
+
+          switch (doboz.statusz) {
+            case "raktarban":
+              default:
+                bgClass = "bg-warning-subtle text-dark border-warning";
+                iconClass = "bi-box-seam-fill text-warning";
+                break;
+            case "Kiemelve":
+                bgClass = "bg-info text-white border-info";
+                iconClass = "bi-person-bounding-box text-white";
+                break;
+            case "Kutatóteremben":
+                bgClass = "bg-success text-white border-secondary-subtle";
+                iconClass = "bi-book-fill text-dark";
+                break;
+            case "Kölcsönzött":
+                bgClass = "bg-danger-subtle text-danger border-danger";
+                iconClass = "bi-arrow-right-square-fill text-danger";
+                break;
+          }
 
           html += `
           <div class="archive-box ${bgClass} p-2 rounded border d-flex flex-column justify-content-between shadow-sm pointer" 
@@ -475,25 +529,41 @@ function renderTableShelfHTML(polcok, dobozok) {
   rendezettDobozok.forEach((doboz) => {
     const polc = polcok.find((p) => p.id === doboz.polcId);
     const polcSzint = polc ? `${polc.polcSzint}. polc` : "-";
-    const isOut =
-      doboz.statusz === "Kiemelve" ||
-      doboz.statusz === "Kölcsönzött" ||
-      doboz.statusz === "Kutatóteremben";
+    
+    if (doboz) {
+      let isOut = "";
 
-    html += `
-      <tr class="archive-box pointer" data-dobozszam="${doboz.dobozszam}" style="cursor: pointer;">
-        <td><span class="badge bg-secondary-subtle text-dark">${polcSzint}</span></td>
-        <td><strong class="text-primary">${doboz.dobozszam}. doboz</strong></td>
-        <td>${doboz.fondszam}. fond</td>
-        <td>${doboz.allagszam || "-"}. állag</td>
-        <td>${doboz.evkor || "-"}</td>
-        <td>
-          <span class="badge ${isOut ? "bg-info" : "bg-success"}">
-            ${doboz.statusz || "Raktárban"}
-          </span>
-        </td>
-      </tr>
-    `;
+      switch (doboz.statusz) {
+        case "raktarban":
+          default:
+            isOut = "bg-warning-subtle text-dark";
+            break;
+        case "Kiemelve":
+          isOut = "bg-info text-white";
+          break;
+        case "Kölcsönzött":
+          isOut = "bg-danger-subtle text-danger";
+          break;
+        case "Kutatóteremben":
+          isOut = "bg-success text-white";
+          break;
+      }
+
+      html += `
+        <tr class="archive-box pointer" data-dobozszam="${doboz.dobozszam}" style="cursor: pointer;">
+          <td><span class="badge bg-secondary-subtle text-dark">${polcSzint}</span></td>
+          <td><strong class="text-primary">${doboz.dobozszam}. doboz</strong></td>
+          <td>${doboz.fondszam}. fond</td>
+          <td>${doboz.allagszam || "-"}. állag</td>
+          <td>${doboz.evkor || "-"}</td>
+          <td>
+            <span class="badge ${isOut}">
+              ${doboz.statusz}
+            </span>
+          </td>
+        </tr>
+      `;
+    }
   });
 
   html += `

@@ -4,7 +4,8 @@ db.version(2).stores({
   raktarak: "++id, megnevezes",
   dobozok:
     "++id, fondszam, allagszam, evkor, dobozszam, raktarId, allvanyId, polcId, statusz, megjegyzes, folyometer",
-  polcok: "id, raktarId, sor, allvany, polcSzint"
+  polcok: "id, raktarId, sor, allvany, polcSzint",
+  fondjegyzek: "id, fondszam, megnevezes, evkor, folyometer"
 });
 
 export default db;

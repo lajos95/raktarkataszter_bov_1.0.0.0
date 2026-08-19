@@ -1,13 +1,15 @@
 import db from "./db.js";
 import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouseRunningMeters, renderBoxDetails, setViewMode,
-  currentViewMode, renderRunningMeters } from "./ui.js";
+  currentViewMode, renderRunningMeters, renderFondjegyzekHTML } from "./ui.js";
 import { renderFondDistributionChart, renderFondMeterDistributionChart } from "./charts.js";
 
 async function AdatBetoltes() {
   await db.dobozok.clear();
   await db.polcok.clear();
+  await db.fondjegyzek.clear();
   const dobozSzam = await db.dobozok.count();
   const polcSzam = await db.polcok.count();
+  const fondJegyzek = await db.fondjegyzek.count();
 
   if (dobozSzam === 0) {
     try {
@@ -50,6 +52,22 @@ async function AdatBetoltes() {
     }
   }
 
+  if (fondJegyzek === 0) {
+    try {
+      const response3 = await fetch("./data/fondjegyzek.json");
+      if (!response3.ok) {
+        throw new Error(
+          `Nem sikerült beolvasni a JSON fájlt: ${response3.statusText}!`,
+        );
+      }
+      const fondAdatok = await response3.json();
+      await db.fondjegyzek.bulkAdd(fondAdatok);
+      console.log(`${fondAdatok.length} db fondjegyzék elem beolvasva!`);
+    } catch (error) {
+      console.error("Hiba a fondjegyzék JSON beolvasása közben:", error);
+    }
+  }
+
   const osszesDoboz = await db.dobozok.toArray();
   const raktarak = [];
   const latottRaktarak = new Set();
@@ -74,6 +92,7 @@ async function AdatBetoltes() {
 }
 
 async function initApp() {
+  initNavigationListeners();
   initBoxClickListener();
   initViewToggleListeners();
   try {
@@ -124,5 +143,45 @@ function initViewToggleListeners() {
       setViewMode("table");
     });
   }
+}
+
+function initNavigationListeners() {
+  const targetElements = document.querySelectorAll("[data-target]");
+
+  targetElements.forEach((element) => {
+    element.addEventListener("click", async () => {
+      const targetId = element.getAttribute("data-target");
+
+      const views = [
+        document.getElementById("landing"),
+        document.getElementById("charts"),
+        document.getElementById("kataszter"),
+        document.getElementById("fondjegyzek")
+      ];
+
+      views.forEach((view) => {
+        if (view) {
+          view.classList.remove("display_block");
+          view.classList.add("display_none");
+
+        }
+      });
+
+      const targetView = document.getElementById(targetId);
+      if (targetView) {
+        targetView.classList.remove("display_none");
+        targetView.classList.add("display_block");
+      }
+
+      if (targetId === "fondjegyzek") {
+        try {
+          const fondok = await db.fondjegyzek.toArray();
+          renderFondjegyzekHTML(fondok);
+        } catch (error) {
+          console.error("Hiba a fondjegyzék betöltésekor:", error);
+        }
+      }
+    })
+  })
 }
 document.addEventListener("DOMContentLoaded", initApp);
