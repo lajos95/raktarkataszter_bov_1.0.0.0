@@ -4,9 +4,6 @@ import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouse
 import { renderFondDistributionChart, renderFondMeterDistributionChart } from "./charts.js";
 
 async function AdatBetoltes() {
-  await db.dobozok.clear();
-  await db.polcok.clear();
-  await db.fondjegyzek.clear();
   const dobozSzam = await db.dobozok.count();
   const polcSzam = await db.polcok.count();
   const fondJegyzek = await db.fondjegyzek.count();
@@ -57,14 +54,14 @@ async function AdatBetoltes() {
       const response3 = await fetch("./data/fondjegyzek.json");
       if (!response3.ok) {
         throw new Error(
-          `Nem sikerült beolvasni a JSON fájlt: ${response3.statusText}!`,
+          `HTTP hiba! Státusz: ${response3.status} (${response3.statusText}) - Nem található a fájl a ./data/fondjegyzek.json útvonalon.`,
         );
       }
       const fondAdatok = await response3.json();
       await db.fondjegyzek.bulkAdd(fondAdatok);
       console.log(`${fondAdatok.length} db fondjegyzék elem beolvasva!`);
     } catch (error) {
-      console.error("Hiba a fondjegyzék JSON beolvasása közben:", error);
+      console.error("Hiba a fondjegyzék JSON beolvasása közben:", error.message || error);
     }
   }
 
@@ -86,8 +83,10 @@ async function AdatBetoltes() {
   renderStorageTree(raktarak);
   renderFondDistributionChart('fondDobozChart');
   renderFondMeterDistributionChart('fondMeterChart');
-  await updateWarehouseRunningMeters(raktarak[0].id, raktarak[0].nev);
-  await renderDetailedTree(raktarak[0].id, raktarak[0].nev);
+  if (raktarak.length > 0) {
+    await updateWarehouseRunningMeters(raktarak[0].id, raktarak[0].nev);
+    await renderDetailedTree(raktarak[0].id, raktarak[0].nev);
+  }
   await renderRunningMeters();
 }
 

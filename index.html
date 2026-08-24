@@ -35,6 +35,9 @@
           <button class="btn btn-outline-info btn-sm nav-btn" data-target="kataszter">
             <i class="bi bi-grid-3x3-gap-fill me-1"></i> Kataszter
           </button>
+          <button class="btn btn-outline-success btn-sm nav-btn" data-target="fondjegyzek">
+            <i class="bi bi-book me-1"></i> Fondjegyzék
+          </button>
         </div>
       </div>
     </nav>
@@ -170,26 +173,32 @@
     </div>
     <div class="container-fluid display_none" id="kataszter">
       <div class="row mb-4">
-        <!-- 1. FEJLÉC: Globális Kereső -->
-        <header class="main-header">
-          <div class="logo">ArchivKataszter v1.0</div>
-          <div class="search-box">
-            <input
+        
+        <h3>Kereső</h3>
+        <div class="col-md-6">
+          <input
               type="text"
+              class="form-control mb-3"
               id="global-search"
-              placeholder="Gyorskeresés (Fond, állag, doboz...)"
+              placeholder="Fondszám, megnevezés, dobozszám..."
             />
-            <button id="search-btn">Keresés</button>
-          </div>
-        </header>
+        </div>
+        <div class="col-md-6">
+          <select id="raktarSelect" class="form-select">
+            <option value="" selected>Válassz egy raktárat...</option>
+            <option value="0">Összes raktár</option>
+            <option value="1">I. sz. Központi raktár</option>
+            <option value="2">II. sz. Központi raktár</option>
+            <option value="3">III. sz. Központi raktár</option>
+          </select>
+        </div>
       </div>
+      <button id="search-btn" class="btn btn-outline-dark mb-3">Keresés</button>
+        
+      <hr>
       <div class="row">
         <div class="col-2 border-end">
           <nav class="nav-menu">
-            <button class="nav-link active" id="btn-dashboard">
-              Vezérlőpult (Dashboard)
-            </button>
-            <hr />
             <h3>Raktárak</h3>
             <ul id="storage-tree"></ul>
           </nav>
@@ -202,7 +211,7 @@
                 <i class="bi bi-diagram-3-fill me-2"></i>Raktár hierarchia
               </h5>
               <div
-                class="warehouse-tree-container bg-light p-3 rounded"
+                class="warehouse-tree-container p-3 rounded"
                 style="min-height: 500px; max-height: 700px; overflow-y: auto"
               >
                 <ul class="list-unstyled warehouse-tree"></ul>
@@ -256,6 +265,7 @@
             </div>
           </div>
         </div>
+        <hr>
         <div class="shelf-content"></div>
       </div>
     </div>
