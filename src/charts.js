@@ -35,6 +35,7 @@ export async function renderDoughnutChart({
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           display: false,

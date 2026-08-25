@@ -2,6 +2,7 @@ import db from "./db.js";
 import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouseRunningMeters, renderBoxDetails, setViewMode,
   currentViewMode, renderRunningMeters, renderFondjegyzekHTML } from "./ui.js";
 import { renderFondDistributionChart, renderFondMeterDistributionChart } from "./charts.js";
+import { initSearch } from "./search.js";
 
 async function AdatBetoltes() {
   const dobozSzam = await db.dobozok.count();
@@ -94,6 +95,7 @@ async function initApp() {
   initNavigationListeners();
   initBoxClickListener();
   initViewToggleListeners();
+  initSearch();
   try {
     await AdatBetoltes();
 
