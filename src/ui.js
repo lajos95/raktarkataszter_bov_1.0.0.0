@@ -84,87 +84,101 @@ export function renderStorageTree(raktarak) {
   });
 }
 
-export async function renderDetailedTree(raktarId, raktarNev) {
+export async function renderDetailedTree() {
   const detailedTreeContainer = document.querySelector(".warehouse-tree");
   if (!detailedTreeContainer) return;
 
   try {
-    const osszesPolc = await db.polcok
-      .where("raktarId")
-      .equals(raktarId)
-      .toArray();
+    const osszesPolc = await db.polcok.toArray();
 
     const faStruktura = {};
 
     osszesPolc.forEach((polc) => {
+      const rId = polc.raktarId;
+      const rNev = polc.raktarNev || `${rId}. sz. Központi Raktár`;
       const s = polc.sor;
       const a = polc.allvany;
 
-      if (!faStruktura[s]) {
-        faStruktura[s] = {};
+      if (!faStruktura[rId]) {
+        faStruktura[rId] = {
+          nev: rNev,
+          sorok: {}
+        };
       }
-      if (!faStruktura[s][a]) {
-        faStruktura[s][a] = [];
+      if (!faStruktura[rId].sorok[s]) {
+        faStruktura[rId].sorok[s] = {};
       }
-      faStruktura[s][a].push(polc);
+      if (!faStruktura[rId].sorok[s][a]) {
+        faStruktura[rId].sorok[s][a] = [];
+      }
+
+      faStruktura[rId].sorok[s][a].push(polc);
     });
 
-    const safeRaktarId = String(raktarId).replace(/[^a-zA-Z0-9]/g, "_");
-
-    let html = `
-      <li class="tree-item room mb-2">
-          <div class="tree-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#room-${safeRaktarId}-collapse" style="cursor: pointer;">
-              <i class="bi bi-chevron-down toggle-icon me-2 text-muted"></i>
-              <i class="bi bi-door-closed-fill text-warning me-2"></i>
-              <span class="fw-bold">${raktarNev}</span>
-          </div>
-          <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="room-${safeRaktarId}-collapse">
-    `;
+    let html = "";
 
     Object.keys(faStruktura)
-      .sort()
-      .forEach((sorKulcs) => {
-        const safeSorKulcs = String(sorKulcs).replace(/[^a-zA-Z0-9]/g, "_");
-        const sorId = `sor-${safeRaktarId}-${safeSorKulcs}`;
-        html += `
-        <li class="tree-item row-item mt-2">
-            <div class="tree-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#${sorId}-collapse" style="cursor: pointer;">
-                <i class="bi bi-chevron-down toggle-icon me-2 text-muted"></i>
-                <i class="bi bi-reception-4 text-primary me-2"></i>
-                <span>${sorKulcs}</span>
-            </div>
-            <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="${sorId}-collapse">
-      `;
+      .sort((a, b) => Number(a) - Number(b))
+      .forEach((raktarId) => {
+        const raktarData = faStruktura[raktarId];
+        const safeRaktarId = String(raktarId).replace(/[^a-zA-Z0-9]/g, "_");
 
-        Object.keys(faStruktura[sorKulcs])
-          .sort()
-          .forEach((allvanyKulcs) => {
-            const safeAllvanyKulcs = String(allvanyKulcs).replace(
-              /[^a-zA-Z0-9]/g,
-              "_",
-            );
-            const allvanyId = `allvany-${safeRaktarId}-${safeSorKulcs}-${safeAllvanyKulcs}`;
-            html += `
-          <li class="tree-item rack-item mt-2">
-              <div class="tree-header d-flex align-items-center rack-link" data-raktarid="${raktarId}" data-sor="${sorKulcs}" data-allvany="${allvanyKulcs}">
-              <div data-bs-toggle="collapse" data-bs-target="#${allvanyId}-collapse">
+        html += `
+          <li class="tree-item room mb-2">
+              <div class="tree-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#room-${safeRaktarId}-collapse" style="cursor: pointer;">
                   <i class="bi bi-chevron-down toggle-icon me-2 text-muted"></i>
-                  <i class="bi bi-grid-3x3 text-success me-2"></i>
-                  <span class="fw-semibold">${allvanyKulcs}</span>
+                  <i class="bi bi-door-closed-fill text-warning me-2"></i>
+                  <span class="fw-bold">${raktarData.nev}</span>
               </div>
-              </div>
-              <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="${allvanyId}-collapse">
+              <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="room-${safeRaktarId}-collapse">
         `;
 
-            faStruktura[sorKulcs][allvanyKulcs]
-              .sort((a, b) => a.polcSzint - b.polcSzint)
-              .forEach((polc) => {
+        Object.keys(raktarData.sorok)
+          .sort()
+          .forEach((sorKulcs) => {
+            const safeSorKulcs = String(sorKulcs).replace(/[^a-zA-Z0-9]/g, "_");
+            const sorId = `sor-${safeRaktarId}-${safeSorKulcs}`;
+
+            html += `
+              <li class="tree-item row-item mt-2">
+                  <div class="tree-header d-flex align-items-center" data-bs-toggle="collapse" data-bs-target="#${sorId}-collapse" style="cursor: pointer;">
+                      <i class="bi bi-chevron-down toggle-icon me-2 text-muted"></i>
+                      <i class="bi bi-reception-4 text-primary me-2"></i>
+                      <span>${sorKulcs}</span>
+                  </div>
+                  <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="${sorId}-collapse">
+            `;
+
+            Object.keys(raktarData.sorok[sorKulcs])
+              .sort()
+              .forEach((allvanyKulcs) => {
+                const safeAllvanyKulcs = String(allvanyKulcs).replace(/[^a-zA-Z0-9]/g, "_");
+                const allvanyId = `allvany-${safeRaktarId}-${safeSorKulcs}-${safeAllvanyKulcs}`;
+
                 html += `
-            <li class="tree-item shelf-item mt-1 py-1 px-2 rounded tree-link" data-polcid="${polc.id}">
-                <i class="bi bi-layers text-secondary me-2"></i>
-                <span>${polc.polcSzint}. polc (${polc.hosszFolyometer} fm)</span>
-            </li>
-          `;
+                  <li class="tree-item rack-item mt-2">
+                      <div class="tree-header d-flex align-items-center rack-link" data-raktarid="${raktarId}" data-raktarnev="${raktarData.nev}" data-sor="${sorKulcs}" data-allvany="${allvanyKulcs}">
+                        <div data-bs-toggle="collapse" data-bs-target="#${allvanyId}-collapse">
+                            <i class="bi bi-chevron-down toggle-icon me-2 text-muted"></i>
+                            <i class="bi bi-grid-3x3 text-success me-2"></i>
+                            <span class="fw-semibold">${allvanyKulcs}</span>
+                        </div>
+                      </div>
+                      <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="${allvanyId}-collapse">
+                `;
+
+                raktarData.sorok[sorKulcs][allvanyKulcs]
+                  .sort((a, b) => a.polcSzint - b.polcSzint)
+                  .forEach((polc) => {
+                    html += `
+                      <li class="tree-item shelf-item mt-1 py-1 px-2 rounded tree-link" data-polcid="${polc.id}">
+                          <i class="bi bi-layers text-secondary me-2"></i>
+                          <span>${polc.polcSzint}. polc (${polc.hosszFolyometer} fm)</span>
+                      </li>
+                    `;
+                  });
+
+                html += `</ul></li>`;
               });
 
             html += `</ul></li>`;
@@ -173,9 +187,10 @@ export async function renderDetailedTree(raktarId, raktarNev) {
         html += `</ul></li>`;
       });
 
-    html += `</ul></li>`;
-
     detailedTreeContainer.innerHTML = html;
+
+    const firstRoom = detailedTreeContainer.querySelector('.room .collapse');
+    if (firstRoom) firstRoom.classList.add('show');
 
     detailedTreeContainer.onclick = async function (e) {
       const shelfLink = e.target.closest(".tree-link");
@@ -192,15 +207,21 @@ export async function renderDetailedTree(raktarId, raktarNev) {
 
         const polcId = shelfLink.dataset.polcid;
         console.log("-> Polcszint sikeresen kiválasztva! Polc ID:", polcId);
-
         return;
       }
 
       const rackLink = e.target.closest(".rack-link");
       if (rackLink) {
+        detailedTreeContainer
+          .querySelectorAll(".rack-link, .tree-link")
+          .forEach((el) => {
+            el.classList.remove("bg-primary-subtle", "fw-bold", "text-primary");
+          });
+
         rackLink.classList.add("bg-primary-subtle", "fw-bold");
 
         const rId = rackLink.dataset.raktarid;
+        const rNev = rackLink.dataset.raktarnev;
         const sKulcs = rackLink.dataset.sor;
         const aKulcs = rackLink.dataset.allvany;
 
@@ -215,40 +236,17 @@ export async function renderDetailedTree(raktarId, raktarNev) {
           .anyOf(polcIdTomb)
           .toArray();
 
-        renderShelfContent(raktarNev, sKulcs, aKulcs, polcok, dobozok);
+        renderShelfContent(rNev, sKulcs, aKulcs, polcok, dobozok);
 
-        const isCollapseTrigger = e.target.closest(
-          '[data-bs-toggle="collapse"]',
-        );
-
-        detailedTreeContainer
-          .querySelectorAll(".rack-link, .tree-link")
-          .forEach((el) => {
-            el.classList.remove("bg-primary-subtle", "fw-bold", "text-primary");
-          });
-
-        rackLink.classList.add("bg-primary-subtle", "fw-bold");
-
-        const adatok = {
-          raktarId: rackLink.dataset.raktarid,
-          sor: rackLink.dataset.sor,
-          allvany: rackLink.dataset.allvany,
-        };
-
-        console.log("-> Állvány sikeresen kiválasztva!", adatok);
+        const isCollapseTrigger = e.target.closest('[data-bs-toggle="collapse"]');
 
         if (!isCollapseTrigger) {
-          const triggerEl = rackLink.querySelector(
-            '[data-bs-toggle="collapse"]',
-          );
+          const triggerEl = rackLink.querySelector('[data-bs-toggle="collapse"]');
           if (triggerEl) {
             const targetId = triggerEl.getAttribute("data-bs-target");
             const collapseEl = document.querySelector(targetId);
             if (collapseEl && typeof bootstrap !== "undefined") {
-              const bsCollapse = bootstrap.Collapse.getOrCreateInstance(
-                collapseEl,
-                { toggle: false },
-              );
+              const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
               bsCollapse.toggle();
             }
           }
@@ -260,53 +258,102 @@ export async function renderDetailedTree(raktarId, raktarNev) {
   }
 }
 
-export function renderFloorPlan(
-  raktarId,
-  raktarNev,
-  telitettseg = 0,
-  foglalt = 0,
-  max = 0,
-) {
-  let statuszSzin = "";
-  let statuszSzoveg = "";
+export async function renderFloorPlan() {
+  const container = document.getElementById("warehouse-occupancy-card");
+  if (!container) return;
 
-  if (telitettseg >= 80) {
-    statuszSzin = "bg-danger";
-    statuszSzoveg = "Kevés/nincs szabad hely";
-  } else if (telitettseg >= 50) {
-    statuszSzin = "bg-warning";
-    statuszSzoveg = "Raktár több, mint a fele telített";
-  } else {
-    statuszSzin = "bg-success text-white";
-    statuszSzoveg = "Sok szabad hely";
-  }
+  try {
+    // 1. Összes polc és doboz lekérése az IndexedDB-ből
+    const [osszesPolc, osszesDoboz] = await Promise.all([
+      db.polcok.toArray(),
+      db.dobozok.toArray()
+    ]);
 
-  const floorPlanContainer = document.querySelector(
-    ".card.bg-light.mb-4.shadow-sm",
-  );
+    // 2. Raktárak azonosítása és nevének gyűjtése
+    const raktarMap = new Map();
 
-  if (floorPlanContainer) {
-    floorPlanContainer.innerHTML = `
-            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                <h6 class="mb-0"><i class="bi bi-map-fill me-2"></i>A kiválasztott raktár telítettsége</h6>
-                <span class="badge bg-dark">Kiválasztva: ${raktarId}. sz. Központi Raktár</span>
+    osszesPolc.forEach((polc) => {
+      if (!raktarMap.has(polc.raktarId)) {
+        raktarMap.set(polc.raktarId, {
+          id: polc.raktarId,
+          nev: `${polc.raktarId}. sz. Központi Raktár`,
+          osszesKapacitasFm: 0,
+          foglaltFm: 0,
+          dobozSzam: 0
+        });
+      }
+      const r = raktarMap.get(polc.raktarId);
+      r.osszesKapacitasFm += Number(polc.hosszFolyometer) || 0;
+    });
+
+    // Dobozok összegzése raktár szerint
+    osszesDoboz.forEach((doboz) => {
+      if (raktarMap.has(doboz.raktarId)) {
+        const r = raktarMap.get(doboz.raktarId);
+        r.foglaltFm += Number(doboz.folyometer) || 0.12;
+        r.dobozSzam += 1;
+        if (doboz.raktarNev) {
+          r.nev = doboz.raktarNev; // frissítés pontos névre, ha elérhető
+        }
+      }
+    });
+
+    // 3. HTML tartalom összeállítása az összes raktárra
+    let html = `
+      <div class="card-body">
+        <h5 class="fw-bold mb-3 text-dark">
+          <i class="bi bi-building me-2 text-primary"></i>Raktári Telítettségi Áttekintés
+        </h5>
+        <div class="row g-3">
+    `;
+
+    raktarMap.forEach((raktar) => {
+      const szazalek = raktar.osszesKapacitasFm > 0 
+        ? Math.round((raktar.foglaltFm / raktar.osszesKapacitasFm) * 100) 
+        : 0;
+
+      let statusClass = "bg-success";
+      if (szazalek >= 85) {
+        statusClass = "bg-danger";
+      } else if (szazalek >= 50) {
+        statusClass = "bg-warning text-dark";
+      }
+
+      html += `
+        <div class="col-12 col-md-6 col-xl-4">
+          <div class="border rounded p-3 bg-white shadow-sm h-100">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-bold m-0 text-truncate">${raktar.nev}</h6>
+              <span class="badge ${statusClass}">${szazalek}%</span>
             </div>
-            <div class="card-body">
-                <div class="floor-plan d-flex gap-3 p-3 bg-white border rounded justify-content-center flex-wrap">
-                    <div class="room-block p-3 border border-2 border-primary rounded text-center bg-primary-subtle position-relative" style="width: 250px;">
-                        <div class="fw-bold text-primary mb-2">
-                            <i class="bi bi-door-closed-fill fs-4 d-block mb-1"></i>
-                            ${raktarNev}
-                        </div>
-                        <div class="small fw-semibold text-secondary mb-2">Foglalt: ${foglalt.toFixed(2)} / ${max.toFixed(2)} fm</div>
-                        <div class="progress" style="height: 15px;">
-                            <div class="progress-bar ${statuszSzin.includes("text-dark") ? "bg-warning text-dark" : statuszSzin}" role="progressbar" style="width: ${telitettseg}%;" aria-valuenow="${telitettseg}" aria-valuemin="0" aria-valuemax="100">${telitettseg}%</div>
-                        </div>
-                        <span class="badge ${statuszSzin} mt-2" style="font-size: 0.7rem;">${statuszSzoveg}</span>
-                    </div>
-                </div>
+            <p class="small text-muted mb-2">
+              Foglalt: <strong>${raktar.foglaltFm.toFixed(2)} fm</strong> / ${raktar.osszesKapacitasFm.toFixed(2)} fm 
+              <br>(${raktar.dobozSzam} db doboz)
+            </p>
+            <div class="progress" style="height: 12px;">
+              <div 
+                class="progress-bar ${statusClass}" 
+                role="progressbar" 
+                style="width: ${szazalek}%" 
+                aria-valuenow="${szazalek}" 
+                aria-valuemin="0" 
+                aria-valuemax="100">
+              </div>
             </div>
-        `;
+          </div>
+        </div>
+      `;
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+  } catch (error) {
+    console.error("Hiba a raktári telítettség megjelenítésekor:", error);
   }
 }
 
@@ -361,10 +408,16 @@ export function renderShelfContent(
 
   const shelfTitle = document.getElementById("shelf-title");
   const shelfSubtitle = document.getElementById("shelf-subtitle");
+  const shelfsSum = document.getElementById("shelfs");
+  const shelfBoxes = document.getElementById("shelf-boxes");
   if (shelfTitle)
-    shelfTitle.innerHTML = `<i class="bi bi-grid-3x3-gap-fill me-2"></i>${sorNev} / ${allvanyNev} állvány`;
+    shelfTitle.textContent = `${raktarNev}`;
   if (shelfSubtitle)
-    shelfSubtitle.textContent = `${raktarNev} • Összesen ${polcok.length} polc`;
+    shelfSubtitle.innerHTML = `<i class="bi bi-grid-3x3-gap-fill mt-2 me-2"></i>${sorNev} / ${allvanyNev}`;
+  if (shelfsSum)
+    shelfsSum.innerHTML = `<i class="bi bi-bookshelf mt-2"></i> Összesen ${polcok.length} polc`;
+  if (shelfBoxes)
+    shelfBoxes.innerHTML = `<i class="bi bi-box mt-2"></i> Összesen ${dobozok.length} doboz`;
 
   if (currentViewMode === "visual") {
     contentContainer.innerHTML = renderVisualShelfHTML(polcok, dobozok);
@@ -415,6 +468,7 @@ export function renderFondjegyzekHTML(fondjegyzek) {
 
   container.innerHTML = html;
 }
+
 function renderVisualShelfHTML(polcok, dobozok) {
   const rendezettPolcok = [...polcok].sort((a, b) => b.polcSzint - a.polcSzint);
   let html = `<div class="visual-rack d-flex flex-column gap-4">`;
@@ -507,16 +561,16 @@ function renderTableShelfHTML(polcok, dobozok) {
   }
 
   let html = `
-    <div class="table-responsive bg-white rounded shadow-sm border p-3 text-center">
+    <div class="table-responsive bg-white rounded shadow-sm border text-center">
       <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
+        <thead class="table-dark">
           <tr>
-            <th>Polcszint</th>
-            <th>Dobozszám</th>
-            <th>Fondszám</th>
-            <th>Állagszám</th>
-            <th>Évkör</th>
-            <th>Státusz</th>
+            <th class="border">Polcszint</th>
+            <th class="border">Dobozszám</th>
+            <th class="border">Fondszám</th>
+            <th class="border">Állagszám</th>
+            <th class="border">Évkör</th>
+            <th class="border">Státusz</th>
           </tr>
         </thead>
         <tbody>
@@ -551,12 +605,12 @@ function renderTableShelfHTML(polcok, dobozok) {
 
       html += `
         <tr class="archive-box pointer" data-dobozszam="${doboz.dobozszam}" style="cursor: pointer;">
-          <td><span class="badge bg-secondary-subtle text-dark">${polcSzint}</span></td>
-          <td><strong class="text-primary">${doboz.dobozszam}. doboz</strong></td>
-          <td>${doboz.fondszam}. fond</td>
-          <td>${doboz.allagszam || "-"}. állag</td>
-          <td>${doboz.evkor || "-"}</td>
-          <td>
+          <td class="border"><span class="badge bg-secondary-subtle text-dark">${polcSzint}</span></td>
+          <td class="border"><strong class="text-primary">${doboz.dobozszam}. doboz</strong></td>
+          <td class="border">${doboz.fondszam}. fond</td>
+          <td class="border">${doboz.allagszam || "-"}. állag</td>
+          <td class="border">${doboz.evkor || "-"}</td>
+          <td class="border">
             <span class="badge ${isOut}">
               ${doboz.statusz}
             </span>

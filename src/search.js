@@ -90,7 +90,7 @@ function renderSearchResults(talalatok) {
   if (talalatok.length === 0) {
     resultContainer.innerHTML = `
       <div class="alert alert-warning text-center" role="alert">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>Nincs a keresési feltételeknek megfelelő doboz.
+        <i class="bi bi-collection-fill me-2"></i>Nincs a keresési feltételeknek megfelelő doboz.
       </div>
     `;
     return;
@@ -100,20 +100,20 @@ function renderSearchResults(talalatok) {
   let html = `
     <div class="card shadow-sm border-0">
       <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="bi bi-search me-2"></i>Keresési találatok (${talalatok.length} db)</h5>
+        <h5 class="mb-0"><i class="bi bi-collection me-2"></i>Keresési találatok (${talalatok.length} db)</h5>
         <button class="btn btn-sm btn-outline-light" id="close-search-results"><i class="bi bi-x-lg"></i> Bezárás</button>
       </div>
       <div class="table-responsive">
         <table class="table table-hover table-striped align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Fondszám</th>
-              <th>Dobozszám</th>
-              <th>Megnevezés</th>
-              <th>Évkör</th>
-              <th>Státusz</th>
-              <th>Folyóméter</th>
-              <th>Művelet</th>
+          <thead>
+            <tr class="text-center">
+              <th class="table-warning border">Fondszám</th>
+              <th class="table-warning border">Dobozszám</th>
+              <th class="table-warning border">Megnevezés</th>
+              <th class="table-warning border">Évkör</th>
+              <th class="table-warning border">Státusz</th>
+              <th class="table-warning border">Folyóméter</th>
+              <th class="table-warning border">Művelet</th>
             </tr>
           </thead>
           <tbody>
@@ -121,18 +121,18 @@ function renderSearchResults(talalatok) {
 
   talalatok.forEach((d) => {
     html += `
-      <tr>
-        <td class="fw-bold text-primary">${d.fondszam || "-"}. fond</td>
-        <td>${d.dobozszam || "-"}</td>
-        <td>${d.megnevezes || "Nincs megnevezés"}</td>
-        <td>${d.evkor || "-"}</td>
-        <td>
+      <tr class="text-center">
+        <td class="fw-bold text-primary border">${d.fondszam || "-"}. fond</td>
+        <td class="border">${d.dobozszam || "-"}</td>
+        <td class="border">${d.megnevezes || "Nincs megnevezés"}</td>
+        <td class="border">${d.evkor || "-"}</td>
+        <td class="border">
           <span class="badge ${d.statusz === "raktarban" ? "bg-success" : "bg-warning text-dark"}">
             ${d.statusz || "Ismeretlen"}
           </span>
         </td>
-        <td>${d.folyometer ? d.folyometer + " fm" : "-"}</td>
-        <td>
+        <td class="border">${d.folyometer ? d.folyometer + " fm" : "-"}</td>
+        <td class="border">
           <button class="btn btn-sm btn-outline-primary show-box-location" data-box-id="${d.id}">
             <i class="bi bi-geo-alt-fill me-1"></i>Megjelenítés
           </button>

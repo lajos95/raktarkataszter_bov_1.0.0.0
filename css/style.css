@@ -1,3 +1,19 @@
+.table-responsive {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 .display_none {
   display: none;
 }
@@ -40,6 +56,20 @@
   color: #0d6efd !important;
 }
 
+.canvas-body {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.card-select {
+  transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.card-select:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
 .tree-item {
   cursor: pointer;
 }
@@ -64,7 +94,6 @@
 }
 
 .archive-box {
-  min-width: 120px;
   max-height: 100px;
   overflow: auto;
   cursor: pointer;

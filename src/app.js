@@ -84,9 +84,10 @@ async function AdatBetoltes() {
   renderStorageTree(raktarak);
   renderFondDistributionChart('fondDobozChart');
   renderFondMeterDistributionChart('fondMeterChart');
+  await renderFloorPlan();
   if (raktarak.length > 0) {
     await updateWarehouseRunningMeters(raktarak[0].id, raktarak[0].nev);
-    await renderDetailedTree(raktarak[0].id, raktarak[0].nev);
+    await renderDetailedTree();
   }
   await renderRunningMeters();
 }

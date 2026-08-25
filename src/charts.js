@@ -73,7 +73,7 @@ export async function renderFondDistributionChart(canvasId) {
     await renderDoughnutChart({
       canvasId: canvasId,
       dataMap: fondStats,
-      titleText: "Állomány megoszlása fondok szerint (dobozszám)",
+      titleText: "Állomány megoszlása dobozszám szerint",
       unitText: "doboz"
     });
   } catch (error) {
@@ -95,7 +95,7 @@ export async function renderFondMeterDistributionChart(canvasId) {
     await renderDoughnutChart({
       canvasId: canvasId,
       dataMap: meterStats,
-      titleText: "Állomány megoszlása fondok szerint (folyóméter)",
+      titleText: "Állomány megoszlása folyóméter szerint",
       unitText: "fm"
     });
   } catch (error) {
