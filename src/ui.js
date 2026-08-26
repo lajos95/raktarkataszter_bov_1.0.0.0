@@ -19,10 +19,16 @@ export function setViewMode(mode) {
 export async function renderRunningMeters() {
   try {
     let osszesPolc = await db.polcok.toArray();
-    let teljesKapacitasFm = osszesPolc.reduce((sum, polc) => sum + (Number(polc.hosszFolyometer) || 0), 0);
+    let teljesKapacitasFm = osszesPolc.reduce(
+      (sum, polc) => sum + (Number(polc.hosszFolyometer) || 0),
+      0,
+    );
 
     let osszesDoboz = await db.dobozok.toArray();
-    let osszesFoglaltFm = osszesDoboz.reduce((sum, doboz) => sum + (Number(doboz.hosszFolyometer) || 0.12), 0);
+    let osszesFoglaltFm = osszesDoboz.reduce(
+      (sum, doboz) => sum + (Number(doboz.hosszFolyometer) || 0.12),
+      0,
+    );
 
     let globalPercent = 0;
     if (teljesKapacitasFm > 0) {
@@ -102,7 +108,7 @@ export async function renderDetailedTree() {
       if (!faStruktura[rId]) {
         faStruktura[rId] = {
           nev: rNev,
-          sorok: {}
+          sorok: {},
         };
       }
       if (!faStruktura[rId].sorok[s]) {
@@ -130,7 +136,7 @@ export async function renderDetailedTree() {
                   <i class="bi bi-door-closed-fill text-warning me-2"></i>
                   <span class="fw-bold">${raktarData.nev}</span>
               </div>
-              <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="room-${safeRaktarId}-collapse">
+              <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="room-${safeRaktarId}-collapse" data-bs-parent=".warehouse-tree">
         `;
 
         Object.keys(raktarData.sorok)
@@ -146,13 +152,16 @@ export async function renderDetailedTree() {
                       <i class="bi bi-reception-4 text-primary me-2"></i>
                       <span>${sorKulcs}</span>
                   </div>
-                  <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="${sorId}-collapse">
+                  <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="${sorId}-collapse" data-bs-parent="room-${safeRaktarId}-collapse">
             `;
 
             Object.keys(raktarData.sorok[sorKulcs])
               .sort()
               .forEach((allvanyKulcs) => {
-                const safeAllvanyKulcs = String(allvanyKulcs).replace(/[^a-zA-Z0-9]/g, "_");
+                const safeAllvanyKulcs = String(allvanyKulcs).replace(
+                  /[^a-zA-Z0-9]/g,
+                  "_",
+                );
                 const allvanyId = `allvany-${safeRaktarId}-${safeSorKulcs}-${safeAllvanyKulcs}`;
 
                 html += `
@@ -164,7 +173,7 @@ export async function renderDetailedTree() {
                             <span class="fw-semibold">${allvanyKulcs}</span>
                         </div>
                       </div>
-                      <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="${allvanyId}-collapse">
+                      <ul class="collapse list-unstyled ms-4 ps-2 border-start" id="${allvanyId}-collapse" data-bs-parent="${sorId}-collapse">
                 `;
 
                 raktarData.sorok[sorKulcs][allvanyKulcs]
@@ -189,10 +198,43 @@ export async function renderDetailedTree() {
 
     detailedTreeContainer.innerHTML = html;
 
-    const firstRoom = detailedTreeContainer.querySelector('.room .collapse');
-    if (firstRoom) firstRoom.classList.add('show');
+    const firstRoom = detailedTreeContainer.querySelector(".room .collapse");
+    if (firstRoom) firstRoom.classList.add("show");
 
     detailedTreeContainer.onclick = async function (e) {
+      const headerTrigger = e.target.closest(
+        '[data-bs-toggle="collapse"], .rack-link',
+      );
+
+      if (headerTrigger) {
+        const toggleSubEl = headerTrigger.hasAttribute("data-bs-toggle")
+          ? headerTrigger
+          : headerTrigger.querySelector('[data-bs-toggle="collapse"]');
+
+        if (toggleSubEl) {
+          const targetId = toggleSubEl.getAttribute("data-bs-target");
+          const currentCollapse = document.querySelector(targetId);
+
+          if (currentCollapse && typeof bootstrap !== "undefined") {
+            const parentList = headerTrigger.closest("ul");
+            if (parentList) {
+              const siblingCollapses = parentList.querySelectorAll(
+                ":scope > li > .collapse.show",
+              );
+              siblingCollapses.forEach((openEl) => {
+                if (openEl !== currentCollapse) {
+                  const bsCollapse = bootstrap.Collapse.getOrCreateInstance(
+                    openEl,
+                    { toggle: false },
+                  );
+                  bsCollapse.hide();
+                }
+              });
+            }
+          }
+        }
+      }
+
       const shelfLink = e.target.closest(".tree-link");
       if (shelfLink) {
         e.stopPropagation();
@@ -209,7 +251,6 @@ export async function renderDetailedTree() {
         console.log("-> Polcszint sikeresen kiválasztva! Polc ID:", polcId);
         return;
       }
-
       const rackLink = e.target.closest(".rack-link");
       if (rackLink) {
         detailedTreeContainer
@@ -238,15 +279,22 @@ export async function renderDetailedTree() {
 
         renderShelfContent(rNev, sKulcs, aKulcs, polcok, dobozok);
 
-        const isCollapseTrigger = e.target.closest('[data-bs-toggle="collapse"]');
+        const isCollapseTrigger = e.target.closest(
+          '[data-bs-toggle="collapse"]',
+        );
 
         if (!isCollapseTrigger) {
-          const triggerEl = rackLink.querySelector('[data-bs-toggle="collapse"]');
+          const triggerEl = rackLink.querySelector(
+            '[data-bs-toggle="collapse"]',
+          );
           if (triggerEl) {
             const targetId = triggerEl.getAttribute("data-bs-target");
             const collapseEl = document.querySelector(targetId);
             if (collapseEl && typeof bootstrap !== "undefined") {
-              const bsCollapse = bootstrap.Collapse.getOrCreateInstance(collapseEl, { toggle: false });
+              const bsCollapse = bootstrap.Collapse.getOrCreateInstance(
+                collapseEl,
+                { toggle: false },
+              );
               bsCollapse.toggle();
             }
           }
@@ -266,7 +314,7 @@ export async function renderFloorPlan() {
     // 1. Összes polc és doboz lekérése az IndexedDB-ből
     const [osszesPolc, osszesDoboz] = await Promise.all([
       db.polcok.toArray(),
-      db.dobozok.toArray()
+      db.dobozok.toArray(),
     ]);
 
     // 2. Raktárak azonosítása és nevének gyűjtése
@@ -279,7 +327,7 @@ export async function renderFloorPlan() {
           nev: `${polc.raktarId}. sz. Központi Raktár`,
           osszesKapacitasFm: 0,
           foglaltFm: 0,
-          dobozSzam: 0
+          dobozSzam: 0,
         });
       }
       const r = raktarMap.get(polc.raktarId);
@@ -308,9 +356,10 @@ export async function renderFloorPlan() {
     `;
 
     raktarMap.forEach((raktar) => {
-      const szazalek = raktar.osszesKapacitasFm > 0 
-        ? Math.round((raktar.foglaltFm / raktar.osszesKapacitasFm) * 100) 
-        : 0;
+      const szazalek =
+        raktar.osszesKapacitasFm > 0
+          ? Math.round((raktar.foglaltFm / raktar.osszesKapacitasFm) * 100)
+          : 0;
 
       let statusClass = "bg-success";
       if (szazalek >= 85) {
@@ -351,7 +400,6 @@ export async function renderFloorPlan() {
     `;
 
     container.innerHTML = html;
-
   } catch (error) {
     console.error("Hiba a raktári telítettség megjelenítésekor:", error);
   }
@@ -410,8 +458,7 @@ export function renderShelfContent(
   const shelfSubtitle = document.getElementById("shelf-subtitle");
   const shelfsSum = document.getElementById("shelfs");
   const shelfBoxes = document.getElementById("shelf-boxes");
-  if (shelfTitle)
-    shelfTitle.textContent = `${raktarNev}`;
+  if (shelfTitle) shelfTitle.textContent = `${raktarNev}`;
   if (shelfSubtitle)
     shelfSubtitle.innerHTML = `<i class="bi bi-grid-3x3-gap-fill mt-2 me-2"></i>${sorNev} / ${allvanyNev}`;
   if (shelfsSum)
@@ -428,9 +475,9 @@ export function renderShelfContent(
 
 export function renderFondjegyzekHTML(fondjegyzek) {
   const container = document.getElementById("fondjegyzek_content");
-  if(!container) return;
+  if (!container) return;
 
-  if(!fondjegyzek || fondjegyzek.length === 0) {
+  if (!fondjegyzek || fondjegyzek.length === 0) {
     container.innerHTML = `<div class="alert alert-info">Nincsenek megjeleníthető fondok.</div>`;
     return;
   }
@@ -494,8 +541,7 @@ function renderVisualShelfHTML(polcok, dobozok) {
 
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 4; col++) {
-
-        const slotIndex = (col * 3) + (3 - row - 1);
+        const slotIndex = col * 3 + (3 - row - 1);
         const doboz = polcDobozok[slotIndex];
 
         if (doboz) {
@@ -504,22 +550,22 @@ function renderVisualShelfHTML(polcok, dobozok) {
 
           switch (doboz.statusz) {
             case "raktarban":
-              default:
-                bgClass = "bg-warning-subtle text-dark border-warning";
-                iconClass = "bi-box-seam-fill text-warning";
-                break;
+            default:
+              bgClass = "bg-warning-subtle text-dark border-warning";
+              iconClass = "bi-box-seam-fill text-warning";
+              break;
             case "Kiemelve":
-                bgClass = "bg-info text-white border-info";
-                iconClass = "bi-person-bounding-box text-white";
-                break;
+              bgClass = "bg-info text-white border-info";
+              iconClass = "bi-person-bounding-box text-white";
+              break;
             case "Kutatóteremben":
-                bgClass = "bg-success text-white border-secondary-subtle";
-                iconClass = "bi-book-fill text-dark";
-                break;
+              bgClass = "bg-success text-white border-secondary-subtle";
+              iconClass = "bi-book-fill text-dark";
+              break;
             case "Kölcsönzött":
-                bgClass = "bg-danger-subtle text-danger border-danger";
-                iconClass = "bi-arrow-right-square-fill text-danger";
-                break;
+              bgClass = "bg-danger-subtle text-danger border-danger";
+              iconClass = "bi-arrow-right-square-fill text-danger";
+              break;
           }
 
           html += `
@@ -544,11 +590,10 @@ function renderVisualShelfHTML(polcok, dobozok) {
       }
     }
 
-      html += `
+    html += `
         </div>
       </div>
     `;
-    
   });
 
   html += `</div>`;
@@ -583,15 +628,15 @@ function renderTableShelfHTML(polcok, dobozok) {
   rendezettDobozok.forEach((doboz) => {
     const polc = polcok.find((p) => p.id === doboz.polcId);
     const polcSzint = polc ? `${polc.polcSzint}. polc` : "-";
-    
+
     if (doboz) {
       let isOut = "";
 
       switch (doboz.statusz) {
         case "raktarban":
-          default:
-            isOut = "bg-warning-subtle text-dark";
-            break;
+        default:
+          isOut = "bg-warning-subtle text-dark";
+          break;
         case "Kiemelve":
           isOut = "bg-info text-white";
           break;
