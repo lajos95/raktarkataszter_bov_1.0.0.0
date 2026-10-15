@@ -2,11 +2,14 @@ import db from "./db.js";
 
 let resultContainer = document.getElementById("search-results-container");
 
+let currentSearchResults = [];
+
 export function initSearch() {
 const searchBtn = document.getElementById("search-btn");
 const searchInput = document.getElementById("global-search");
 const resetBtn = document.getElementById("reset-btn");
 const selectedRaktar = document.getElementById("raktarSelect");
+const statusCheckboxes = document.querySelectorAll('#kataszter input[type="checkbox"]');
 
   if (searchBtn) {
     searchBtn.addEventListener("click", executeSearch);
@@ -21,6 +24,10 @@ const selectedRaktar = document.getElementById("raktarSelect");
     });
   }
 
+  statusCheckboxes.forEach((cb) => {
+    cb.addEventListener("change", applyFiltersAndRender);
+  });
+
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
       if (searchInput) {
@@ -29,7 +36,10 @@ const selectedRaktar = document.getElementById("raktarSelect");
       if (selectedRaktar) {
         selectedRaktar.value = "";
       }
+      
+      statusCheckboxes.forEach((cb) => (cb.checked = false));
 
+      currentSearchResults = [];
       if (resultContainer) {
         resultContainer.innerHTML = "";
       }
@@ -45,38 +55,61 @@ async function executeSearch() {
 
     const selectedRaktar = document.getElementById("raktarSelect")?.value || "";
 
-  try {
-    // 1. Összes doboz beolvasása az IndexedDB-ből (Dexie)
-    const mindazDoboz = await db.dobozok.toArray();
+    if (!query && (selectedRaktar === "")) {
+    currentSearchResults = [];
+    if (resultContainer) {
+      resultContainer.innerHTML = `
+        <div class="alert alert-info text-center mt-3" role="alert">
+          <i class="bi bi-info-circle me-2"></i>Kérlek adj meg egy keresőszót és válassz raktárat!
+        </div>
+      `;
+    }
+    return;
+  }
 
-    // 2. Szűrés végrehajtása
-    const talalatok = mindazDoboz.filter((doboz) => {
-      // Szöveges egyezés (fondszám, megnevezés, dobozszám)
+  try {
+    const mindenEgyseg = await db.egysegek.toArray();
+
+    currentSearchResults = mindenEgyseg.filter((egyseg) => {
       const matchesQuery =
         !query ||
-        (doboz.fondszam &&
-          doboz.fondszam.toString().toLowerCase().includes(query)) ||
-        (doboz.megnevezes && doboz.megnevezes.toLowerCase().includes(query)) ||
-        (doboz.dobozszam && doboz.dobozszam.toString().includes(query));
+        (egyseg.fondszam &&
+          egyseg.fondszam.toString().toLowerCase().includes(query)) ||
+        (egyseg.megnevezes && egyseg.megnevezes.toLowerCase().includes(query)) ||
+        (egyseg.egysegSzam && egyseg.egysegSzam.toString().includes(query));
 
-      // Raktár szűrés ("0" vagy üres string esetén az összes raktárban keres)
       const matchesRaktar =
-        !selectedRaktar ||
         selectedRaktar === "0" ||
-        doboz.raktarId === Number(selectedRaktar);
+        egyseg.raktarId === Number(selectedRaktar);
 
       return matchesQuery && matchesRaktar;
     });
 
-    // 3. Eredmények kirajzolása
-    renderSearchResults(talalatok);
+    applyFiltersAndRender();
+
   } catch (error) {
     console.error("Hiba a keresés során:", error);
   }
 }
 
+function applyFiltersAndRender() {
+  if (!currentSearchResults || currentSearchResults.length === 0) {
+    return;
+  }
+
+  const checkedStatuses = Array.from(document.querySelectorAll('#kataszter input[type="checkbox"]:checked')).map((cb) => cb.value.toLowerCase());
+
+  const szurtTalalatok = currentSearchResults.filter((egyseg) => {
+    const egysegStatus = (egyseg.statusz || "").toLowerCase();
+    return (
+      checkedStatuses.length === 0 || checkedStatuses.includes(egysegStatus)
+    )
+  });
+
+  renderSearchResults(szurtTalalatok);
+}
+
 function renderSearchResults(talalatok) {
-  // Ha még nincs jelen a találati konténer, hozzuk létre a kereső gomb alatt
   if (!resultContainer) {
     resultContainer = document.createElement("div");
     resultContainer.id = "search-results-container";
@@ -86,17 +119,15 @@ function renderSearchResults(talalatok) {
     searchBtn.parentNode.insertBefore(resultContainer, searchBtn.nextSibling);
   }
 
-  // Ha nincs találat
   if (talalatok.length === 0) {
     resultContainer.innerHTML = `
       <div class="alert alert-warning text-center" role="alert">
-        <i class="bi bi-collection-fill me-2"></i>Nincs a keresési feltételeknek megfelelő doboz.
+        <i class="bi bi-collection-fill me-2"></i>Nincs a keresési feltételeknek megfelelő egység.
       </div>
     `;
     return;
   }
 
-  // Táblázat felépítése
   let html = `
     <div class="card shadow-sm border-0">
       <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
@@ -108,7 +139,7 @@ function renderSearchResults(talalatok) {
           <thead>
             <tr class="text-center">
               <th class="table-warning border">Fondszám</th>
-              <th class="table-warning border">Dobozszám</th>
+              <th class="table-warning border">Egységszám</th>
               <th class="table-warning border">Megnevezés</th>
               <th class="table-warning border">Évkör</th>
               <th class="table-warning border">Státusz</th>
@@ -119,26 +150,47 @@ function renderSearchResults(talalatok) {
           <tbody>
   `;
 
-  talalatok.forEach((d) => {
+  talalatok.forEach((e) => {
+
+    if (e) {
+      let isOut = "";
+
+      switch (e.statusz) {
+        case "raktarban":
+        default:
+          isOut = "bg-warning-subtle text-dark";
+          break;
+        case "Kiemelve":
+          isOut = "bg-info text-white";
+          break;
+        case "Kölcsönzött":
+          isOut = "bg-danger-subtle text-danger";
+          break;
+        case "Kutatóteremben":
+          isOut = "bg-success text-white";
+          break;
+      }
+
     html += `
       <tr class="text-center">
-        <td class="fw-bold text-primary border">${d.fondszam || "-"}. fond</td>
-        <td class="border">${d.dobozszam || "-"}</td>
-        <td class="border">${d.megnevezes || "Nincs megnevezés"}</td>
-        <td class="border">${d.evkor || "-"}</td>
+        <td class="fw-bold text-primary border">${e.fondszam || "-"}. fond</td>
+        <td class="border">${e.egysegSzam || "-"}</td>
+        <td class="border">${e.megnevezes || "Nincs megnevezés"}</td>
+        <td class="border">${e.evkor || "-"}</td>
         <td class="border">
-          <span class="badge ${d.statusz === "raktarban" ? "bg-success" : "bg-warning text-dark"}">
-            ${d.statusz || "Ismeretlen"}
+          <span class="badge ${isOut}">
+          ${e.statusz}
           </span>
         </td>
-        <td class="border">${d.folyometer ? d.folyometer + " fm" : "-"}</td>
+        <td class="border">${e.folyometer ? e.folyometer + " fm" : "-"}</td>
         <td class="border">
-          <button class="btn btn-sm btn-outline-primary show-box-location" data-box-id="${d.id}">
+          <button class="btn btn-sm btn-outline-primary show-box-location" data-box-id="${e.id}">
             <i class="bi bi-geo-alt-fill me-1"></i>Megjelenítés
           </button>
         </td>
       </tr>
     `;
+    }
   });
 
   html += `

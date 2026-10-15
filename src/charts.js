@@ -62,33 +62,33 @@ export async function renderDoughnutChart({
 
 export async function renderFondDistributionChart(canvasId) {
   try {
-    const dobozok = await db.dobozok.toArray();
+    const egysegek = await db.egysegek.toArray();
     const fondStats = {};
 
-    dobozok.forEach((d) => {
-      const fondNev = d.fondszam ? `${d.fondszam}. fond` : "Ismeretlen";
+    egysegek.forEach((e) => {
+      const fondNev = e.fondszam ? `${e.fondszam}. fond` : "Ismeretlen";
       fondStats[fondNev] = (fondStats[fondNev] || 0) + 1;
     });
 
     await renderDoughnutChart({
       canvasId: canvasId,
       dataMap: fondStats,
-      titleText: "Állomány megoszlása dobozszám szerint",
-      unitText: "doboz"
+      titleText: "Állomány megoszlása egységszám szerint",
+      unitText: "egység"
     });
   } catch (error) {
-    console.error("Hiba a doboz diagram kirajzolásakor:", error);
+    console.error("Hiba a egység diagram kirajzolásakor:", error);
   }
 }
 
 export async function renderFondMeterDistributionChart(canvasId) {
   try {
-    const dobozok = await db.dobozok.toArray();
+    const egysegek = await db.egysegek.toArray();
     const meterStats = {};
 
-    dobozok.forEach((d) => {
-      const fondNev = d.fondszam ? `${d.fondszam}. fond` : "Ismeretlen";
-      const fm = Number(d.folyometer) || 0; 
+    egysegek.forEach((e) => {
+      const fondNev = e.fondszam ? `${e.fondszam}. fond` : "Ismeretlen";
+      const fm = Number(e.folyometer) || 0; 
       meterStats[fondNev] = Number(((meterStats[fondNev] || 0) + fm).toFixed(2));
     });
 

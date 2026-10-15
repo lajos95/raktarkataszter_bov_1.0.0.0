@@ -3,217 +3,217 @@
     "id": "p_r1_s1_aA_p1",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 1,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, Alsó polc - normál szabvány"
+    "megjegyzes": ""
   },
   {
     "id": "p_r1_s1_aA_p2",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 2,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, Középső polc - normál szabvány"
+    "megjegyzes": ""
   },
   {
     "id": "p_r1_s1_aA_p3",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 3,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, Felső polc - rövidebb a tetőszerkezet miatt"
+    "megjegyzes": ""
   },
   {
     "id": "p_r1_s1_aA_p4",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 4,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, Felső polc - rövidebb a tetőszerkezet miatt"
+    "megjegyzes": ""
   },
   {
     "id": "p_r1_s1_aA_p5",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 5,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, Felső polc - rövidebb a tetőszerkezet miatt"
+    "megjegyzes": ""
   },
   {
     "id": "p_r1_s1_aB_p1",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 1,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, B állvány alsó polc - szélesített"
+    "megjegyzes": ""
   },
   {
     "id": "p_r1_s1_aB_p2",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 2,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, B állvány alsó polc - szélesített"
+    "megjegyzes": ""
   },
   {
     "id": "p_r1_s1_aB_p3",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 3,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, B állvány alsó polc - szélesített"
+    "megjegyzes": ""
   },
   {
     "id": "p_r1_s1_aB_p4",
     "raktarId": 1,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 4,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "I. raktár, B állvány alsó polc - szélesített"
+    "megjegyzes": ""
   },
   {
     "id": "p_r2_s1_aA_p1",
     "raktarId": 2,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 1,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r2_s1_aA_p2",
     "raktarId": 2,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 2,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r2_s1_aA_p3",
     "raktarId": 2,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 3,
-    "hosszFolyometer": 2.0,
-    "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
+    "hosszFolyometer": 1.44,
+    "megjegyzes": ""
   },
   {
     "id": "p_r2_s1_aB_p1",
     "raktarId": 2,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 1,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r2_s1_aB_p2",
     "raktarId": 2,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 2,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r2_s1_aB_p3",
     "raktarId": 2,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 3,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "II. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
 
   {
     "id": "p_r3_s1_aA_p1",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 1,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r3_s1_aA_p2",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 2,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r3_s1_aA_p3",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "A Állvány",
+    "allvany": "A",
     "polcSzint": 3,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r3_s1_aB_p1",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 1,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r3_s1_aB_p2",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 2,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r3_s1_aB_p3",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "B Állvány",
+    "allvany": "B",
     "polcSzint": 3,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r3_s1_aC_p1",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "C Állvány",
+    "allvany": "C",
     "polcSzint": 1,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r3_s1_aC_p2",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "C Állvány",
+    "allvany": "C",
     "polcSzint": 2,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   },
   {
     "id": "p_r3_s1_aC_p3",
     "raktarId": 3,
     "sor": "01. Sor",
-    "allvany": "C Állvány",
+    "allvany": "C",
     "polcSzint": 3,
     "hosszFolyometer": 1.44,
-    "megjegyzes": "III. raktár, extra hosszú polc köteteknek"
+    "megjegyzes": ""
   }
 ]

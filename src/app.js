@@ -1,17 +1,15 @@
 import db from "./db.js";
-import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouseRunningMeters, renderBoxDetails, setViewMode,
-  currentViewMode, renderRunningMeters, renderFondjegyzekHTML } from "./ui.js";
+import { renderStorageTree, renderFloorPlan, renderDetailedTree, updateWarehouseRunningMeters, renderDataDetails, setViewMode,
+  currentViewMode, renderRunningMeters, renderFondjegyzekHTML, frissitPolckep, initAthelyezoEsemenyek } from "./ui.js";
 import { renderFondDistributionChart, renderFondMeterDistributionChart } from "./charts.js";
 import { initSearch } from "./search.js";
 
 async function AdatBetoltes() {
-  const dobozSzam = await db.dobozok.count();
   const polcSzam = await db.polcok.count();
   const fondJegyzek = await db.fondjegyzek.count();
 
-  if (dobozSzam === 0) {
     try {
-      const response = await fetch("./data/dobozok.json");
+      const response = await fetch("./data/egysegek.json", { cache: "no-store" });
 
       if (!response.ok) {
         throw new Error(
@@ -19,17 +17,15 @@ async function AdatBetoltes() {
         );
       }
 
-      const dobozAdatok = await response.json();
-      await db.dobozok.bulkAdd(dobozAdatok);
+      const egysegAdatok = await response.json();
+      await db.egysegek.clear();
+      await db.egysegek.bulkAdd(egysegAdatok);
       console.log(
-        `${dobozAdatok.length} db egység sikeresen beolvasva a JSON fájlból!`,
+        `${egysegAdatok.length} db egység sikeresen beolvasva a JSON fájlból!`,
       );
     } catch (error) {
       console.error("Hiba történt a JSON beolvasása közben:", error);
     }
-  } else {
-    console.log(`A kataszter aktív. ${dobozSzam} db egység van betöltve.`);
-  }
 
   if (polcSzam === 0) {
     try {
@@ -66,17 +62,17 @@ async function AdatBetoltes() {
     }
   }
 
-  const osszesDoboz = await db.dobozok.toArray();
+  const osszesEgyseg = await db.egysegek.toArray();
   const raktarak = [];
   const latottRaktarak = new Set();
 
-  osszesDoboz.forEach((doboz) => {
-    if (!latottRaktarak.has(doboz.raktarId)) {
-      latottRaktarak.add(doboz.raktarId);
+  osszesEgyseg.forEach((egyseg) => {
+    if (!latottRaktarak.has(egyseg.raktarId)) {
+      latottRaktarak.add(egyseg.raktarId);
       const storageName =
-        doboz.raktarNev || `${doboz.raktarId}. sz. Központi Raktár`;
+        egyseg.raktarNev || `${egyseg.raktarId}. sz. Központi Raktár`;
       raktarak.push({
-        id: doboz.raktarId,
+        id: egyseg.raktarId,
         nev: storageName,
       });
     }
@@ -97,29 +93,37 @@ async function initApp() {
   initBoxClickListener();
   initViewToggleListeners();
   initSearch();
+  initAthelyezoEsemenyek();
+  
   try {
     await AdatBetoltes();
-
+    await frissitPolckep();
     console.log("Alkalmazás sikeresen elindult!");
+
+    setInterval(async () => {
+      await AdatBetoltes();
+      await frissitPolckep();
+      console.log("Adatbázis frissült!");
+    }, 30000);
+
   } catch (error) {
     console.error("Hiba történt az alkalmazás indításakor:", error);
   }
 }
 
 function initBoxClickListener() {
-  const shelfContent = document.querySelector(".shelf-content");
-  shelfContent.addEventListener("click", async (e) => {
-    const dobozElem = e.target.closest(".archive-box");
-    if (!dobozElem) return;
+  document.addEventListener("click", async (e) => {
+    const egysegElem = e.target.closest(".archive-box");
+    if (!egysegElem) return;
 
-    const keresettDoboz = Number(dobozElem.dataset.dobozszam);
+    const keresettEgyseg = Number(egysegElem.dataset.id);
 
     try {
-      const doboz = await db.dobozok.where("dobozszam").equals(keresettDoboz).first();
-      if (!doboz) return;
+      const egyseg = await db.egysegek.where("id").equals(keresettEgyseg).first();
+      if (!egyseg) return;
 
-      const polc = await db.polcok.where("id").equals(doboz.polcId).first();
-      renderBoxDetails(doboz, polc);
+      const polc = await db.polcok.where("id").equals(egyseg.polcId).first();
+      renderDataDetails(egyseg, polc);
     } catch (error) {
       console.error("Hiba történt a doboz részletes adatainak lekérésekor:", error);
     }
@@ -165,7 +169,6 @@ function initNavigationListeners() {
         if (view) {
           view.classList.remove("display_block");
           view.classList.add("display_none");
-
         }
       });
 
@@ -186,4 +189,5 @@ function initNavigationListeners() {
     })
   })
 }
+
 document.addEventListener("DOMContentLoaded", initApp);
