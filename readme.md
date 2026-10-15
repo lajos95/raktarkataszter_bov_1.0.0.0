@@ -41,5 +41,5 @@ Az **ArchívKataszter** egy modern, webes alapú levéltári raktárkataszter é
 Mivel az alkalmazás moduláris ES-modulokat (`import`/`export`) használ, a helyes működéshez ajánlott egy lokális fejlesztői szerver (például a VS Code *Live Server* kiegészítése) használata a fájlok közvetlen megnyitása (`file://`) helyett.
 
 ### 📂 Adatkezelés és Módosítások (Lokális mód)
-Mivel az alkalmazás kliensoldalon (IndexedDB) dolgozik, a dobozok adatainak módosítása, áthelyezése vagy új egységek rögzítése után **a program automatikusan letölt egy frissített `egysegek.json` fájlt**[cite: 3]. 
+Mivel az alkalmazás kliensoldalon (IndexedDB) dolgozik, a dobozok adatainak módosítása, áthelyezése vagy új egységek rögzítése után **a program automatikusan letölt egy frissített `egysegek.json` fájlt**. 
 * **Fontos lépés:** Ahhoz, hogy a módosítások érvényesüljenek a helyi mappastruktúrában, a letöltött fájllal **felül kell írni** a projekt `data/egysegek.json` fájlját a gyökérmappán belül.
